@@ -10,10 +10,13 @@ class Car(WindowElement):
 
         self.xCenter = xCenter
         self.yCenter = yCenter
+        self.previousPoint = (xCenter,yCenter)
         self.direction = pygame.Vector2(0,1)
         self.corners = []
         self.visionDistances = []
         self.lineCollisionPoints = []
+        self.hitCar = False
+        self.getCorners()
         
         
 
@@ -28,12 +31,15 @@ class Car(WindowElement):
         
         self.xCenter = resetPoint[0]
         self.yCenter = resetPoint[1]
+        self.previousPoint = (self.xCenter,self.yCenter)
         self.direction = pygame.Vector2(0,1)
         self.corners = []
         self.visionDistances = []
         self.lineCollisionPoints = []
         self.velocity = 0
         self.driftMomentum = 0
+        self.hitCar = False
+        self.getCorners()
 
 
 
@@ -75,7 +81,7 @@ class Car(WindowElement):
         #     addedVector.normalize()
         # addedVector.x *= abs(self.velocity)
         # addedVector.y *= abs(self.velocity)
-
+        self.previousPoint = (self.xCenter,self.yCenter)
         self.xCenter += addedVector.x
         self.yCenter += addedVector.y
 
@@ -129,6 +135,9 @@ class Car(WindowElement):
         for i in range(4):
             j = (i+1)%4
             if linesIntersect(wall.points[0],wall.points[1],(self.corners[i].x,self.corners[i].y),(self.corners[j].x,self.corners[j].y)):
+                self.xCenter = self.previousPoint[0]
+                self.yCenter = self.previousPoint[1]
+                self.velocity = 0
                 return True
         return False
     
@@ -223,4 +232,6 @@ class Car(WindowElement):
                 minDistance = distanceToWall
                 closestWallHit = Vector2(collisionPoint)
         return closestWallHit,minDistance
+
+
             

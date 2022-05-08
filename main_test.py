@@ -7,10 +7,11 @@ from GameEnviroment import *
 env = GameEnviroment()
 while env.is_done() != True:
     env.render()
-    sleep(0.5)
+    sleep(0.2)
     # env.car1.turn(1)
     # env.car1.update()
     env.car1.actionTaken((2,2))
+    env.checkWalls()
     env.car1.getAllDistances(env.walls)
 # windows = pygame.display.set_mode((1200,700))
 

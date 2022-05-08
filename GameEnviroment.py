@@ -33,7 +33,7 @@ class GameEnviroment:
 
     def checkWalls(self):
         #TODO add index for car that hits wall
-        # print(self.car1.hitAllWalls(self.walls))
+        print(self.car1.hitAllWalls(self.walls))
         pass
 
 
