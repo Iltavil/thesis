@@ -20,7 +20,9 @@ class GameEnviroment:
         self.createWalls()
 
         #we will have 4 cars
-        self.car1 = Car(300,300)
+        self.cars = []
+        self.cars.append(Car(300,300))
+        self.cars.append(Car(350,350))
 
 
     def createWalls(self):
@@ -31,9 +33,9 @@ class GameEnviroment:
         self.walls.append(Wall([self.width,1],[self.width,self.height]))
         self.walls.append(Wall([1,self.height],[self.width,self.height]))
 
-    def checkWalls(self):
+    def checkWalls(self,index):
         #TODO add index for car that hits wall
-        print(self.car1.hitAllWalls(self.walls))
+        print(self.cars.hitAllWalls(self.walls))
         pass
 
 
@@ -49,8 +51,9 @@ class GameEnviroment:
                 self.done= True
 
 
-        self.car1.render(self.window)
-        self.car1.renderSight(self.window)
+        for car in self.cars:
+            car.render(self.window)
+        # self.car1.renderSight(self.window)
         self.renderWalls()
 
         pygame.display.flip()

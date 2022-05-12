@@ -1,7 +1,8 @@
+from re import S
 import pygame
 from WindowElement import WindowElement
 from utils import *
-from shapely.geometry import Point, LineString
+from shapely.geometry import Point, LineString, Polygon
 
 
 class Car(WindowElement):
@@ -10,15 +11,19 @@ class Car(WindowElement):
 
         self.xCenter = xCenter
         self.yCenter = yCenter
+        self.originPoint = (xCenter,yCenter)
         self.previousPoint = (xCenter,yCenter)
         self.direction = pygame.Vector2(0,1)
         self.corners = []
         self.visionDistances = []
         self.lineCollisionPoints = []
         self.hitCar = False
+        self.polygon = None
         self.getCorners()
         
         
+        #all cars should have an index
+        self.targetIndex = -1
 
         self.image = pygame.image.load("car.svg")
         self.image = pygame.transform.scale(self.image, (carLength,carWidth))
@@ -26,11 +31,18 @@ class Car(WindowElement):
         self.velocity = 0
         self.driftMomentum = 0
 
-    def reset(self,resetPoints):
+    def setTarget(self, targetIndex):
+        self.targetIndex = targetIndex
+
+    def resetWithAnotherPosition(self,resetPoints):
         resetPoint = resetPoints[0]
-        
+        self.reset()
         self.xCenter = resetPoint[0]
         self.yCenter = resetPoint[1]
+
+    def reset(self):   
+        self.xCenter = self.originPoint[0]
+        self.yCenter = self.originPoint[1]
         self.previousPoint = (self.xCenter,self.yCenter)
         self.direction = pygame.Vector2(0,1)
         self.corners = []
@@ -129,6 +141,7 @@ class Car(WindowElement):
         for i in range(4):
             self.corners.append(carPosition + (directionVector * carLength / 2 * cornerMultipliers[i][0]) +
                               (normalVector * carWidth / 2 * cornerMultipliers[i][1]))
+        self.polygon = Polygon(self.corners)
 
 
     def hitWall(self, wall):
@@ -147,6 +160,16 @@ class Car(WindowElement):
             if self.hitWall(wall):
                 return True
         return False
+
+    def hitAllCars(self,cars,selfIndex):
+        #check if it hits another car
+        self.getCorners()
+        for i in range(len(cars)):
+            if i == selfIndex:
+                continue
+            return self.polygon.intersects(cars[i].polygon)
+            
+
     #we decelerate from 0 or break from forward to 0 speed
     def decelerateCar(self):
         if self.velocity <= 0:

@@ -10,9 +10,10 @@ while env.is_done() != True:
     sleep(0.2)
     # env.car1.turn(1)
     # env.car1.update()
-    env.car1.actionTaken((2,2))
-    env.checkWalls()
-    env.car1.getAllDistances(env.walls)
+    env.cars[0].actionTaken((1,1))
+    print(env.cars[0].hitAllCars(env.cars,0))
+    # env.checkWalls()
+    # env.cars[0].getAllDistances(env.walls)
 # windows = pygame.display.set_mode((1200,700))
 
 # p1 = Polygon([(0,0), (1,1)])
