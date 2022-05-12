@@ -11,7 +11,7 @@ while env.is_done() != True:
     # env.car1.turn(1)
     # env.car1.update()
     env.cars[0].actionTaken((1,1))
-    print(env.cars[0].hitAllCars(env.cars,0))
+    print(env.cars[0].hitAllCars())
     # env.checkWalls()
     # env.cars[0].getAllDistances(env.walls)
 # windows = pygame.display.set_mode((1200,700))

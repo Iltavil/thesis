@@ -6,40 +6,60 @@ from shapely.geometry import Point, LineString, Polygon
 
 
 class Car(WindowElement):
-    def __init__(self,xCenter,yCenter):
+    def __init__(self,xCenter,yCenter,walls):
         super().__init__()
 
         self.xCenter = xCenter
         self.yCenter = yCenter
-        self.originPoint = (xCenter,yCenter)
         self.previousPoint = (xCenter,yCenter)
         self.direction = pygame.Vector2(0,1)
         self.corners = []
         self.visionDistances = []
         self.lineCollisionPoints = []
+        #0/wallType for wall, 1/carType for car
+        self.lineCollisionPointsType = []
         self.hitCar = False
         self.polygon = None
+        self.velocity = 0
         self.getCorners()
         
         
         #all cars should have an index
         self.targetIndex = -1
 
-        self.image = pygame.image.load("car.svg")
+        
+
+
+        #should not be modified after initialised
+        self.originPoint = (xCenter,yCenter)
+        self.image = pygame.image.load("images\car.png")
         self.image = pygame.transform.scale(self.image, (carLength,carWidth))
+        self.walls = walls
+        self.allCars = []
+        self.ownIndex = -1
 
-        self.velocity = 0
-        self.driftMomentum = 0
+        
 
+    #sets the target of this car
+    #it needs to be called by main function after it hits its target
     def setTarget(self, targetIndex):
         self.targetIndex = targetIndex
 
+
+    #sets all cars, needs to be called after all cars were initialised
+    def setCars(self, allCars, ownIndex):
+        self.allCars = allCars
+        self.ownIndex = ownIndex
+
+    #resets the car and chenges the position to a random one
     def resetWithAnotherPosition(self,resetPoints):
+        #TODO, choose random position, check if position is viable
         resetPoint = resetPoints[0]
         self.reset()
         self.xCenter = resetPoint[0]
         self.yCenter = resetPoint[1]
 
+    #fully resets the car, when the game is restarted
     def reset(self):   
         self.xCenter = self.originPoint[0]
         self.yCenter = self.originPoint[1]
@@ -48,15 +68,15 @@ class Car(WindowElement):
         self.corners = []
         self.visionDistances = []
         self.lineCollisionPoints = []
+        self.lineCollisionPointsType = []
         self.velocity = 0
-        self.driftMomentum = 0
         self.hitCar = False
         self.getCorners()
 
 
 
     def render(self,window):
-        #
+        #renders the car on the given surface, after rotating the image
         angle = vectorToAngle(self.direction)
         image_rect = self.image.get_rect(topleft = (self.xCenter - carLength/2, self.yCenter - carWidth/2))
         offset_center_to_pivot = pygame.math.Vector2(self.xCenter,self.yCenter) - image_rect.center
@@ -66,36 +86,30 @@ class Car(WindowElement):
         rotated_image_rect = rotated_image.get_rect(center = rotated_image_center)
 
         window.blit(rotated_image,rotated_image_rect)
+        # for corner in self.corners:
+        #     pygame.draw.circle(window,color_black,corner,2)
 
     def renderSight(self,window):
+        #renders the sight vectors and the collision points
         for sightLine in self.lineCollisionPoints:
             if sightLine[1] == (0,0):
                 continue
             pygame.draw.circle(window,color_blue,sightLine[1],3)
             pygame.draw.line(window, color_blue, sightLine[0], sightLine[1],1)
 
-    #update the position 
+    #update the position of the car in the 2D plane
     def update(self):
         #we create a vector to calculate added x and y position based on current position and angle
         addedVector = pygame.Vector2(0,0)
         addedVector.x += self.velocity * self.direction.x
         addedVector.y += self.velocity * self.direction.y
 
-        # #drift 
-        # driftVector = pygame.Vector2(self.direction)
-        # driftVector =driftVector.rotate(90)
-        # addedVector.x += self.driftMomentum * driftVector.x
-        # addedVector.x += self.driftMomentum * driftVector.y
-        # self.driftMomentum *= driftFriction
 
-
-        # if addedVector.length() != 0:
-        #     addedVector.normalize()
-        # addedVector.x *= abs(self.velocity)
-        # addedVector.y *= abs(self.velocity)
         self.previousPoint = (self.xCenter,self.yCenter)
         self.xCenter += addedVector.x
         self.yCenter += addedVector.y
+
+        self.getCorners()
 
 
 
@@ -132,44 +146,6 @@ class Car(WindowElement):
             if self.velocity >=0:
                 self.velocity = 0
 
-    def getCorners(self):
-        directionVector = pygame.Vector2(self.direction)
-        normalVector = pygame.Vector2(self.direction).rotate(-90)
-        cornerMultipliers = [[1, 1], [1, -1], [-1, -1], [-1, 1]]
-        carPosition = pygame.Vector2(self.xCenter,self.yCenter)
-        self.corners = []
-        for i in range(4):
-            self.corners.append(carPosition + (directionVector * carLength / 2 * cornerMultipliers[i][0]) +
-                              (normalVector * carWidth / 2 * cornerMultipliers[i][1]))
-        self.polygon = Polygon(self.corners)
-
-
-    def hitWall(self, wall):
-        for i in range(4):
-            j = (i+1)%4
-            if linesIntersect(wall.points[0],wall.points[1],(self.corners[i].x,self.corners[i].y),(self.corners[j].x,self.corners[j].y)):
-                self.xCenter = self.previousPoint[0]
-                self.yCenter = self.previousPoint[1]
-                self.velocity = 0
-                return True
-        return False
-    
-    def hitAllWalls(self, walls):
-        self.getCorners()
-        for wall in walls:
-            if self.hitWall(wall):
-                return True
-        return False
-
-    def hitAllCars(self,cars,selfIndex):
-        #check if it hits another car
-        self.getCorners()
-        for i in range(len(cars)):
-            if i == selfIndex:
-                continue
-            return self.polygon.intersects(cars[i].polygon)
-            
-
     #we decelerate from 0 or break from forward to 0 speed
     def decelerateCar(self):
         if self.velocity <= 0:
@@ -181,7 +157,46 @@ class Car(WindowElement):
             if self.velocity <=0:
                 self.velocity = 0
 
+    #calculates the corners of the car, used to find intersections
+    def getCorners(self):
+        cornerMultipliers = [[1, 1], [1, -1], [-1, -1], [-1, 1]]
+        self.corners = []
+        for i in range(4):
+            self.corners.append(self.getPositionRelativeToRotationAngle(carLength / 2 * cornerMultipliers[i][0],carWidth / 2 * cornerMultipliers[i][1]))
+        self.polygon = Polygon(self.corners)
+
+
+    #checks if the car intersects with the wall by checking all sides against the wall
+    def hitWall(self, wall):
+        for i in range(4):
+            j = (i+1)%4
+            if linesIntersect(wall.points[0],wall.points[1],(self.corners[i].x,self.corners[i].y),(self.corners[j].x,self.corners[j].y)):
+                self.xCenter = self.previousPoint[0]
+                self.yCenter = self.previousPoint[1]
+                self.velocity = 0
+                return True
+        return False
+    
+    #checks if the car hits a wall
+    def hitAllWalls(self):
+        for wall in self.walls:
+            if self.hitWall(wall):
+                return True
+        return False
+
+    #checks if the car hits another car
+    def hitAllCars(self):
+        #check if it hits another car
+        for i in range(len(self.allCars)):
+            if i == self.ownIndex:
+                continue
+            return self.polygon.intersects(self.allCars[i].polygon)
+            
+
+
+
     #turnDirection is -1 for left and 1 for right
+    #turns the car angle clockwise or counterclockwise
     def turn(self, turnDirection):
         # slowSpeedMultiplier is 1 for high speeds and lower for low speeds
         slowSpeedMultiplier = 1
@@ -189,65 +204,96 @@ class Car(WindowElement):
             slowSpeedMultiplier = abs(self.velocity)/(carMaxSpeed/3)
         if self.velocity < 0:
             slowSpeedMultiplier *= 1
-
-        # drift
-        # drift = self.velocity * angleToRadians(turningAngle)
-        # if self.velocity < carMaxSpeed/3:
-        #     drift = 0
-        # self.driftMomentum += drift
         
-        #turn
+
         self.direction = self.direction.rotate(turnDirection * turningAngle * slowSpeedMultiplier)
 
 
-    #have the distance vectors here
-    def getAllDistances(self,walls):
+    #here we get what the car sees
+    #we create rays that show us the car sight
+    def getAllDistances(self):
         self.visionDistances = []
         self.lineCollisionPoints = []
+        self.lineCollisionPointsType = []
         #set side vectors
         sightAngles = [0,20,45,75,105]
         for angle in sightAngles:
-            self.getDistanceFromVector(carLength/2,carWidth/2,angle,walls)
-            self.getDistanceFromVector(carLength/2,-carWidth/2,-angle,walls)
+            self.getDistanceFromVector(carLength/2,carWidth/2,angle)
+            self.getDistanceFromVector(carLength/2,-carWidth/2,-angle)
 
 
 
-    def getDistanceFromVector(self,x,y,angle,walls):
-        originPoint = self.getPositionRelativeToRotationAngle(x,y)
+    #we find the coordinates of the ray then we find the closest point on the segment
+    def getDistanceFromVector(self,x,y,angle):
+        vectorOriginPoint = self.getPositionRelativeToRotationAngle(x,y)
         visionVectorDirection = self.direction.rotate(angle).normalize() * carVisionMaxRange
-        closestPoint,smallestDistance = self.getClosestHitToWall(originPoint,(originPoint[0] + visionVectorDirection[0],originPoint[1] + visionVectorDirection[1]), walls)
+        closestPoint,smallestDistance = self.getClosestHitToWall(vectorOriginPoint,(vectorOriginPoint[0] + visionVectorDirection[0],vectorOriginPoint[1] + visionVectorDirection[1]))
+        collisionType = wallType
+        closestPointCar,smallestDistanceCar = self.getClosestHitToCar(vectorOriginPoint,(vectorOriginPoint[0] + visionVectorDirection[0],vectorOriginPoint[1] + visionVectorDirection[1]))
+
+        if smallestDistanceCar < smallestDistance:
+            closestPoint = closestPointCar
+            smallestDistance = smallestDistanceCar
+            collisionType = carType
+
         
-        self.lineCollisionPoints.append((originPoint,(closestPoint.x,closestPoint.y)))
         if closestPoint.x == 0 and closestPoint.y == 0:
             self.visionDistances.append(carVisionMaxRange)
         else:
             self.visionDistances.append(smallestDistance)
+
+        self.lineCollisionPoints.append((vectorOriginPoint,(closestPoint.x,closestPoint.y)))
+        self.lineCollisionPointsType.append(collisionType)
         
 
 
+    #receives a position on the car
+    #returns a vector with the position on the surface
     def getPositionRelativeToRotationAngle(self,x,y):
-        #receives a position on the car
-        #returns a vector with the position on the surface
         directionVector = pygame.Vector2(self.direction).normalize()
         normalVector = self.direction.rotate(90).normalize()
         return pygame.Vector2(self.xCenter,self.yCenter) +((directionVector * x) + (normalVector * y))
 
-    def getClosestHitToWall(self, point1, point2, walls):
-        #given a line and the walls, find the intersection with the closest wall
-        #returns the point and the distance
+    #given a line and the cars, find the intersection with the closest car
+    #returns the point and the distance
+    def getClosestHitToCar(self, point1, point2):
+        closestCarSideHit = pygame.Vector2(0,0)
+        minDistance = 2 * min(windowHeight, windowWidth)
+        line1 = LineString([Point(point1),Point(point2)])
+
+        for i in range(self.allCars):
+            if i == self.ownIndex:
+                continue
+            for ii in range(4):
+                jj = (ii+1)%4
+                line2 = LineString([Point((self.allCars[i].corners[ii].x,self.allCars[i].corners[ii].y)),Point((self.allCars[i].corners[jj].x,self.allCars[i].corners[jj].y))])
+                collisionPoint = line1.intersection(line2)
+
+                if collisionPoint.is_empty:
+                    continue
+                collisionPoint = (collisionPoint.x,collisionPoint.y)
+
+                distanceToCar = distanceBetweenPoints(point1,collisionPoint)
+                if distanceToCar < minDistance:
+                    minDistance = distanceToCar
+                    closestCarSideHit = Vector2(collisionPoint)
+        return closestCarSideHit,minDistance
+
+            
+    #given a line and the walls, find the intersection with the closest wall
+    #returns the point and the distance
+    def getClosestHitToWall(self, point1, point2):
         closestWallHit = pygame.Vector2(0,0)
         minDistance = 2 * min(windowHeight, windowWidth)
-        
+        line1 = LineString([Point(point1),Point(point2)])
 
-        for wall in walls:
-            line1 = LineString([Point(point1),Point(point2)])
+        for wall in self.walls:
             line2 = LineString([Point(wall.points[0]),Point(wall.points[1])])
             collisionPoint = line1.intersection(line2)
             
             if collisionPoint.is_empty:
                 continue
             collisionPoint = (collisionPoint.x,collisionPoint.y)
-            # collisionPoint = lineIntersectionPoint(point1,point2,wall.points[0],wall.points[1])
             
 
             distanceToWall = distanceBetweenPoints(point1,collisionPoint)

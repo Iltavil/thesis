@@ -10,7 +10,7 @@ color_green = (0,128,0)
 color_blue = (0,0,255)
 
 carLength = 50
-carWidth = 30
+carWidth = 25
 windowWidth = 1300
 windowHeight = 700
 
@@ -23,6 +23,10 @@ turningAngle = 5
 friction = 0.95
 driftFriction = 0.1
 carVisionMaxRange = 400
+
+wallType = 0
+carType = 1
+
 
 def radiansToAngle(radians):
     return radians * 180 / math.pi

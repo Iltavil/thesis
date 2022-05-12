@@ -21,8 +21,12 @@ class GameEnviroment:
 
         #we will have 4 cars
         self.cars = []
-        self.cars.append(Car(300,300))
-        self.cars.append(Car(350,350))
+        self.cars.append(Car(300,300,self.walls))
+        self.cars.append(Car(350,350,self.walls))
+
+        for i in range(len(self.cars)):
+            self.cars[i].setCars(self.cars,i)
+
 
 
     def createWalls(self):
