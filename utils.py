@@ -2,30 +2,47 @@ import math
 
 from pygame import Vector2
 
+gameTime = 90000
 
+#colors
 color_black = (0,0,0)
 color_white = (255,255,255)
 color_red = (255,0,0)
 color_green = (0,128,0)
 color_blue = (0,0,255)
 
+#renderSizes
 carLength = 50
 carWidth = 25
 windowWidth = 1300
 windowHeight = 700
 
+#car driving
 carMaxSpeed = 10
 carMaxSpeedReverse = -4
-carForwardAcceleration = 2
-carBreak = 8
+carForwardAcceleration = 3
+carBreak = 6
 carReverseAcceleration = 1
 turningAngle = 5
 friction = 0.95
 driftFriction = 0.1
-carVisionMaxRange = 400
 
+
+#observable information
 wallType = 0
 carType = 1
+carVisionMaxRange = 400
+
+#reward 
+rewardHitCar = -100
+rewardWasHitByCar = -50
+rewardHitTarget = 10000
+rewardHitWall = -1
+rewardHitsHunter = -500
+rewardWasHitByHunter = -200
+rewardSeesTarget = 1
+rewardTotaledCar = -50
+wallHitsUntilCarBreaks = 10
 
 
 def radiansToAngle(radians):

@@ -8,8 +8,6 @@ class Wall:
         self.points.append(point1)
         self.points.append(point2)
 
-
-
     def draw(self, window):
         pygame.draw.line(window, color_black, self.points[0], self.points[1],3)
 
