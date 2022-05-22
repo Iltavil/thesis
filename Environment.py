@@ -1,7 +1,7 @@
 from pettingzoo import AECEnv
 from pettingzoo.utils import agent_selector
 from pettingzoo.utils import wrappers
-from gym.spaces import Discrete, Tuple, Box
+from gym.spaces import Discrete, Box
 from utils import carVisionMaxRange
 import numpy as np
 import functools
@@ -44,8 +44,8 @@ class Environment(AECEnv):
         self.actions = {agent: {} for agent in self.agents}
 
         self._action_spaces = {agent: Discrete(9) for agent in self.possible_agents}
-        self.observation_spaces = {agent: Box(np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-105,0]),
-        np.array([carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,1,1,1,1,1,1,1,1,1,1,1,212,carVisionMaxRange])
+        self.observation_spaces = {agent: Box(np.array([carMaxSpeedReverse,-180,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-105,0]),
+        np.array([carMaxSpeed,180,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,1,1,1,1,1,1,1,1,1,1,1,212,carVisionMaxRange])
         ,dtype=np.int64) for agent in self.possible_agents}
 
         super().__init__()
@@ -54,8 +54,8 @@ class Environment(AECEnv):
     @functools.lru_cache(maxsize=None)
     def observation_space(self, agent):
         # Gym spaces are defined and documented here: https://gym.openai.com/docs/#spaces
-        return Box(np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-105,0]),
-        np.array([carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,1,1,1,1,1,1,1,1,1,1,1,212,carVisionMaxRange])
+        return Box(np.array([carMaxSpeedReverse,-180,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-105,0]),
+        np.array([carMaxSpeed,180,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,1,1,1,1,1,1,1,1,1,1,1,212,carVisionMaxRange])
         ,dtype=np.int64)
 
     @functools.lru_cache(maxsize=None)

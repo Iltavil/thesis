@@ -79,6 +79,8 @@ class GameEnvironment:
         sightResult = self.cars[index].getAllDistances()
         sightResult.append(self.cars[index].seeTarget())
         sightResult = np.array(np.concatenate(sightResult).flat, dtype=np.int64)
+        sightResult = np.insert(sightResult,0, self.cars[index].velocity)
+        sightResult = np.insert(sightResult,1, vectorToAngle(self.cars[index].direction))
         return sightResult
 
 
