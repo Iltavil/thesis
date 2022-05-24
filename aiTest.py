@@ -1,12 +1,13 @@
-from stable_baselines3 import PPO
-from stable_baselines3.ppo import CnnPolicy
+from stable_baselines3 import PPO, A2C
 from stable_baselines3.common.env_util import make_vec_env
 
 from Environment import *
 
 
-env = Environment()
+env = createEnv()
 # env = make_vec_env(Environment(),4)
+
+# model = A2C("MlpPolicy", env, verbose=1)
 
 model = PPO(
     'MlpPolicy',

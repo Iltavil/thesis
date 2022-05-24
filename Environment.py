@@ -8,6 +8,22 @@ import functools
 
 from GameEnvironment import *
 
+def createEnv():
+    """
+    The env function often wraps the environment in wrappers by default.
+    You can find full documentation for these methods
+    elsewhere in the developer documentation.
+    """
+    env = Environment()
+    # This wrapper is only for environments which print results to the terminal
+    env = wrappers.CaptureStdoutWrapper(env)
+    # this wrapper helps error handling for discrete action spaces
+    env = wrappers.AssertOutOfBoundsWrapper(env)
+    # Provides a wide vareity of helpful user errors
+    # Strongly recommended
+    env = wrappers.OrderEnforcingWrapper(env)
+    return env
+
 class Environment(AECEnv):
     """
     The metadata holds environment constants. From gym, we inherit the "render_modes",
@@ -45,7 +61,7 @@ class Environment(AECEnv):
 
         self._action_spaces = {agent: Discrete(9) for agent in self.possible_agents}
         self.observation_spaces = {agent: Box(np.array([carMaxSpeedReverse,-180,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-105,0]),
-        np.array([carMaxSpeed,180,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,1,1,1,1,1,1,1,1,1,1,1,212,carVisionMaxRange])
+        np.array([carMaxSpeed,180,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,1,1,1,1,1,1,1,1,1,1,1,106,carVisionMaxRange])
         ,dtype=np.int64) for agent in self.possible_agents}
 
         super().__init__()
@@ -55,7 +71,7 @@ class Environment(AECEnv):
     def observation_space(self, agent):
         # Gym spaces are defined and documented here: https://gym.openai.com/docs/#spaces
         return Box(np.array([carMaxSpeedReverse,-180,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-105,0]),
-        np.array([carMaxSpeed,180,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,1,1,1,1,1,1,1,1,1,1,1,212,carVisionMaxRange])
+        np.array([carMaxSpeed,180,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,1,1,1,1,1,1,1,1,1,1,1,106,carVisionMaxRange])
         ,dtype=np.int64)
 
     @functools.lru_cache(maxsize=None)
@@ -149,7 +165,7 @@ class Environment(AECEnv):
             # rewards for all agents are placed in the .rewards dictionary
             for agent in self.agents:
                 self.rewards[agent] = agent.stepScore
-                self.dones[agent] = self.environment.is_done()
+                self.dones[agent] = self.environment.carIsAlive(agent.ownIndex)
                 self.observations = self.environment.observe(agent.ownIndex)
 
         else:

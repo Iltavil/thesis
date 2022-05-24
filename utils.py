@@ -11,6 +11,8 @@ color_red = (255,0,0)
 color_green = (0,128,0)
 color_blue = (0,0,255)
 
+carMaxLives = 5
+
 #renderSizes
 carLength = 50
 carWidth = 25

@@ -28,6 +28,9 @@ class Car(WindowElement):
         self.velocity = 0
         self.hitWallBug = 0
 
+        self.lives = carMaxLives
+        self.stillAlive = True
+
         self.score = 0
         self.stepScore = 0
         self.getCorners()
@@ -76,17 +79,24 @@ class Car(WindowElement):
 
     #resets the car and chenges the position to a random one
     def resetWithAnotherPosition(self):
+        self.lives -= 1
+        if self.lives == 0:
+            self.stillAlive = False
+
         resetPoint = choice(self.resetPoints)
         while not self.checkResetPoint(resetPoint):
             resetPoint = choice(self.resetPoints)
         self.partialReset()
         self.xCenter = resetPoint[0]
         self.yCenter = resetPoint[1]
+        
         self.previousPoint = (self.xCenter,self.yCenter)
 
     def reset(self):
         self.score = 0
         self.stepScore = 0
+        self.lives = carMaxLives
+        self.stillAlive = True
         self.partialReset()
 
 

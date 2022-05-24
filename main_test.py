@@ -20,7 +20,7 @@ env = GameEnvironment()
 while env.is_done() != True:
     env.render()
     env.userInput()
-    print(env.observe(0))
+    # print(env.observe(0))
 #     for i in range(4):
 #         r = env.step(i+1,0)
  

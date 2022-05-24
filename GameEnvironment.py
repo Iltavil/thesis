@@ -6,6 +6,9 @@ from utils import *
 from Car import Car
 import numpy as np
 from gym.spaces import Box
+from pettingzoo.utils import wrappers
+
+
 
 
 class GameEnvironment:
@@ -19,6 +22,7 @@ class GameEnvironment:
         self.clock = pygame.time.Clock()
         self.window = pygame.display.set_mode((self.width,self.height))
         self.done = False
+        self.doneCars = 0
         
         self.resetPoints = [(300,500),(894, 107),(86, 285),(900, 482),(447,161),(580,550),(1050,250),(1104,432)]
 
@@ -100,8 +104,9 @@ class GameEnvironment:
         
 
 
-        for car in self.cars:
-            car.render(self.window)
+        for i in range(len(self.cars)):
+            if self.carIsAlive(i):
+                self.cars[i].render(self.window)
         # for car in self.cars:
         #     car.renderSight(self.window)
         self.renderWalls()
@@ -137,13 +142,26 @@ class GameEnvironment:
         # print(r)
 
     def step(self,carIndex,action):
+        #TODO change the error type
+        if not self.carIsAlive(carIndex):
+            raise ValueError("car is done, but action taken")
+        #end in case of timeout
         if self.startTime - pygame.time.get_ticks() > gameTime:
             self.is_done = True
         self.cars[carIndex].wasHitBeforeStep()
         self.cars[carIndex].translateAction(action)
+        #make car be done
+        if not self.carIsAlive(carIndex):
+            self.doneCars += 1
         self.cars[carIndex].hitAllWalls()
         self.cars[carIndex].hitAllCars()
+        #end in case all cars are done
+        if self.doneCars == len(self.cars):
+            self.is_done = True
         return self.cars[carIndex].stepScore
+
+    def carIsAlive(self,carIndex):
+        return self.cars[carIndex].stillAlive
 
 
     def is_done(self):
@@ -154,6 +172,7 @@ class GameEnvironment:
             car.reset()
         for i in range(len(self.cars)):
             self.cars[i].setCars(self.cars,i)
+        self.doneCars = 0
         self.setInitialTargets()
         self.startTime = pygame.time.get_ticks()
 
