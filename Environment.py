@@ -32,7 +32,7 @@ class Environment(AECEnv):
     The "name" metadata allows the environment to be pretty printed.
     """
 
-    metadata = {"render_modes": ["human"], "name": "rps_v2"}
+    metadata = {"render_modes": ["human"]}
     def __init__(self):
         '''
         The init method takes in environment arguments and
@@ -46,7 +46,9 @@ class Environment(AECEnv):
         '''
         #get the gameEnv here
         self.environment = GameEnvironment()
-        self.possible_agents = self.environment.cars
+        self.possible_agents = []
+        for i in range(len(self.environment.cars)):
+            self.possible_agents.append(i)
         self.agents = self.possible_agents[:]
         self._agent_selector = agent_selector(self.possible_agents)
         self.agent_selection = self.possible_agents[0]
@@ -91,7 +93,7 @@ class Environment(AECEnv):
         should return a sane observation (though not necessarily the most up to date possible)
         at any time after reset() is called.
         """
-        return np.array(self.environment.observe(agent.ownIndex))
+        return np.array(self.environment.observe(agent))
 
     def close(self):
         '''
@@ -150,7 +152,7 @@ class Environment(AECEnv):
             return
         
         currentAgent = self.agent_selection
-        self.environment.step(currentAgent.ownIndex,action)
+        self.environment.step(currentAgent,action)
 
         # the agent which stepped last had its _cumulative_rewards accounted for
         # (because it was returned by last()), so the _cumulative_rewards for this
@@ -164,9 +166,9 @@ class Environment(AECEnv):
         if self._agent_selector.is_last():
             # rewards for all agents are placed in the .rewards dictionary
             for agent in self.agents:
-                self.rewards[agent] = agent.stepScore
-                self.dones[agent] = self.environment.carIsAlive(agent.ownIndex)
-                self.observations = self.environment.observe(agent.ownIndex)
+                self.rewards[agent] = self.environment.cars[agent].stepScore
+                self.dones[agent] = self.environment.carIsDone(agent)
+                self.observations = self.environment.observe(agent)
 
         else:
             # no rewards are allocated until both players give an action

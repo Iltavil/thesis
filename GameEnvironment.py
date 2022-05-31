@@ -6,7 +6,8 @@ from utils import *
 from Car import Car
 import numpy as np
 from gym.spaces import Box
-from pettingzoo.utils import wrappers
+
+
 
 
 
@@ -105,7 +106,7 @@ class GameEnvironment:
 
 
         for i in range(len(self.cars)):
-            if self.carIsAlive(i):
+            if not self.carIsDone(i):
                 self.cars[i].render(self.window)
         # for car in self.cars:
         #     car.renderSight(self.window)
@@ -143,7 +144,7 @@ class GameEnvironment:
 
     def step(self,carIndex,action):
         #TODO change the error type
-        if not self.carIsAlive(carIndex):
+        if self.carIsDone(carIndex):
             raise ValueError("car is done, but action taken")
         #end in case of timeout
         if self.startTime - pygame.time.get_ticks() > gameTime:
@@ -151,7 +152,7 @@ class GameEnvironment:
         self.cars[carIndex].wasHitBeforeStep()
         self.cars[carIndex].translateAction(action)
         #make car be done
-        if not self.carIsAlive(carIndex):
+        if self.carIsDone(carIndex):
             self.doneCars += 1
         self.cars[carIndex].hitAllWalls()
         self.cars[carIndex].hitAllCars()
@@ -160,8 +161,8 @@ class GameEnvironment:
             self.is_done = True
         return self.cars[carIndex].stepScore
 
-    def carIsAlive(self,carIndex):
-        return self.cars[carIndex].stillAlive
+    def carIsDone(self,carIndex):
+        return not self.cars[carIndex].stillAlive
 
 
     def is_done(self):

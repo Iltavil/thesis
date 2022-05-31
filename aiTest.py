@@ -1,13 +1,16 @@
+import imp
 from stable_baselines3 import PPO, A2C
 from stable_baselines3.common.env_util import make_vec_env
+from pettingzoo.utils.conversions import aec_to_parallel
+import supersuit as ss
 
 from Environment import *
 
 
 env = createEnv()
-# env = make_vec_env(Environment(),4)
-
-# model = A2C("MlpPolicy", env, verbose=1)
+# env = aec_to_parallel(env)
+env = ss.vectorize_aec_env_v0(env,1)
+# env = make_vec_env(Environment(),1)
 
 model = PPO(
     'MlpPolicy',

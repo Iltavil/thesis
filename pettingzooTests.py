@@ -1,6 +1,6 @@
 from pettingzoo.test import api_test, render_test, performance_benchmark
 from Environment import *
-from stable_baselines3.common.env_checker import check_env
+
 
 env = Environment()
 env.reset()
