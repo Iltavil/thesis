@@ -14,14 +14,13 @@ from gym.spaces import Box
 
 class GameEnvironment:
     def __init__(self):
-        pygame.init()
+        
 
         self.width = windowWidth
         self.height = windowHeight
         self.fps = 60
-        self.font = pygame.font.SysFont("Times New Roman", 18)
-        self.clock = pygame.time.Clock()
-        self.window = pygame.display.set_mode((self.width,self.height))
+        
+        
         self.done = False
         self.doneCars = 0
         
@@ -37,15 +36,19 @@ class GameEnvironment:
         self.cars.append(Car(580,550,self.walls,self.resetPoints))
         self.cars.append(Car(1050,250,self.walls,self.resetPoints))
         self.cars.append(Car(1104,432,self.walls,self.resetPoints))
+        self.carSteps = []
+        self.carScores = []
 
         for i in range(len(self.cars)):
             self.cars[i].setCars(self.cars,i)
+            self.carSteps.append(0)
+            self.carScores.append(0)
 
         
 
         self.setInitialTargets()
         #start game timer after init
-        self.startTime = pygame.time.get_ticks()
+        # self.startTime = pygame.time.get_ticks()
         
 
     def setInitialTargets(self):
@@ -75,10 +78,6 @@ class GameEnvironment:
         self.walls.append(Wall((1045, 555),(1250, 407)))
 
 
-    def checkWalls(self,index):
-        #TODO add index for car that hits wall
-        print(self.cars.hitAllWalls(self.walls))
-        pass
 
     def observe(self, index):
         sightResult = self.cars[index].getAllDistances()
@@ -95,12 +94,15 @@ class GameEnvironment:
             wall.draw(self.window)
 
     def render(self):
+        pygame.init()
+        # self.clock = pygame.time.Clock()
+        self.window = pygame.display.set_mode((self.width,self.height))
         self.window.fill(color_green)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.done= True
             if event.type == pygame.MOUSEBUTTONUP:
-                print(pygame.mouse.get_pos())
+                # print(pygame.mouse.get_pos())
                 pass
         
 
@@ -113,7 +115,7 @@ class GameEnvironment:
         self.renderWalls()
 
         pygame.display.flip()
-        self.clock.tick(self.fps)
+        # self.clock.tick(self.fps)
 
     def userInput(self):
         keys = pygame.key.get_pressed()
@@ -138,7 +140,10 @@ class GameEnvironment:
         else:
             action = 0
 
-        r = self.step(0,action)
+        i = 1
+        while self.carIsDone(i) == True:
+            i += 1
+        r = self.step(i,action)
         # if r != 0:
         # print(r)
 
@@ -146,20 +151,26 @@ class GameEnvironment:
         #TODO change the error type
         if self.carIsDone(carIndex):
             raise ValueError("car is done, but action taken")
+        self.carSteps[carIndex] += 1
         #end in case of timeout
-        if self.startTime - pygame.time.get_ticks() > gameTime:
-            self.is_done = True
+        if self.carSteps[carIndex] > carMaxSteps:
+            self.done = True
         self.cars[carIndex].wasHitBeforeStep()
         self.cars[carIndex].translateAction(action)
+        self.cars[carIndex].hitAllWalls()
+        self.cars[carIndex].hitAllCars()
+        # self.observe(carIndex)
+        self.cars[carIndex].scoreSeeTarget()
         #make car be done
         if self.carIsDone(carIndex):
             self.doneCars += 1
-        self.cars[carIndex].hitAllWalls()
-        self.cars[carIndex].hitAllCars()
         #end in case all cars are done
-        if self.doneCars == len(self.cars):
-            self.is_done = True
+        if self.doneCars == len(self.cars) - 1:
+            self.done = True
+        # self.render()
+        self.carScores[carIndex] = self.cars[carIndex].stepScore
         return self.cars[carIndex].stepScore
+        
 
     def carIsDone(self,carIndex):
         return not self.cars[carIndex].stillAlive
@@ -171,9 +182,14 @@ class GameEnvironment:
     def reset(self):
         for car in self.cars:
             car.reset()
+        self.carSteps = []
+        self.carScores = []
         for i in range(len(self.cars)):
             self.cars[i].setCars(self.cars,i)
+            self.carSteps.append(0)
+            self.carScores.append(0)
+        self.done = False
         self.doneCars = 0
         self.setInitialTargets()
-        self.startTime = pygame.time.get_ticks()
+        # self.startTime = pygame.time.get_ticks()
 

@@ -150,29 +150,31 @@ class Environment(AECEnv):
             if len(self.agents) > 0:
                 self.agent_selection = self._agent_selector.next()
             return
+
+        
         
         currentAgent = self.agent_selection
-        self.environment.step(currentAgent,action)
 
         # the agent which stepped last had its _cumulative_rewards accounted for
         # (because it was returned by last()), so the _cumulative_rewards for this
         # agent should start again at 0
         self._cumulative_rewards[currentAgent] = 0
+        self.rewards[currentAgent] = self.environment.step(currentAgent,action)
+        self.dones[currentAgent] = self.environment.carIsDone(currentAgent)
+
+        
         self.actions[currentAgent] = action
 
         self.state[self.agent_selection] = action
 
         # collect reward if it is the last agent to act
         if self._agent_selector.is_last():
-            # rewards for all agents are placed in the .rewards dictionary
             for agent in self.agents:
-                self.rewards[agent] = self.environment.cars[agent].stepScore
-                self.dones[agent] = self.environment.carIsDone(agent)
-                self.observations = self.environment.observe(agent)
-
+                self.observations[agent] = self.environment.observe(agent)
+                self.rewards[agent] = self.environment.carScores[agent]
         else:
-            # no rewards are allocated until both players give an action
             self._clear_rewards()
+        
 
         # selects the next agent.
         self.agent_selection = self._agent_selector.next()

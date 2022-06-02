@@ -12,7 +12,7 @@ color_green = (0,128,0)
 color_blue = (0,0,255)
 
 carMaxLives = 5
-carMaxSteps = 1000
+carMaxSteps = 200
 
 #renderSizes
 carLength = 50
@@ -39,11 +39,10 @@ carVisionMaxRange = 400
 #reward 
 rewardHitCar = -100
 rewardWasHitByCar = -50
-rewardHitTarget = 10000
-rewardHitWall = -1
-rewardHitsHunter = -500
-rewardWasHitByHunter = -200
-rewardSeesTarget = 1
+rewardHitTarget = 600
+rewardHitWall = -5
+rewardHitsHunter = -300
+rewardWasHitByHunter = -150
 rewardTotaledCar = -50
 wallHitsUntilCarBreaks = 10
 

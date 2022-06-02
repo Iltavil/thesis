@@ -1,4 +1,5 @@
 from re import S
+from tkinter.messagebox import NO
 import pygame
 from WindowElement import WindowElement
 from utils import *
@@ -10,6 +11,8 @@ from random import choice
 class Car(WindowElement):
     def __init__(self,xCenter,yCenter,walls,resetPoints):
         super().__init__()
+
+        self.image = None
 
         self.xCenter = xCenter
         self.yCenter = yCenter
@@ -27,6 +30,7 @@ class Car(WindowElement):
         self.polygon = None
         self.velocity = 0
         self.hitWallBug = 0
+        self.angleToTarget = 106
 
         self.lives = carMaxLives
         self.stillAlive = True
@@ -44,8 +48,7 @@ class Car(WindowElement):
 
         #should not be modified after initialised
         self.originPoint = (xCenter,yCenter)
-        self.image = pygame.image.load("images\car.png")
-        self.image = pygame.transform.scale(self.image, (carLength,carWidth))
+
         self.walls = walls
         self.allCars = []
         self.resetPoints = resetPoints
@@ -116,6 +119,7 @@ class Car(WindowElement):
         self.wasHitByTarget = False
         self.wasHitByHunter = False
         self.hitWallBug = 0
+        self.angleToTarget = 106
         self.getCorners()
 
 
@@ -123,6 +127,9 @@ class Car(WindowElement):
     def render(self,window):
         #renders the car on the given surface, after rotating the image
         angle = vectorToAngle(self.direction)
+        if self.image == None:
+            self.image = pygame.image.load("images\car.png")
+            self.image = pygame.transform.scale(self.image, (carLength,carWidth))
         image_rect = self.image.get_rect(topleft = (self.xCenter - carLength/2, self.yCenter - carWidth/2))
         offset_center_to_pivot = pygame.math.Vector2(self.xCenter,self.yCenter) - image_rect.center
         rotated_offset = offset_center_to_pivot.rotate(angle)
@@ -432,6 +439,11 @@ class Car(WindowElement):
                 closestWallHit = Vector2(collisionPoint)
         return closestWallHit,minDistance
 
+    def scoreSeeTarget(self):
+        if abs(self.angleToTarget) < 106:
+            self.stepScore += (106 - abs(self.angleToTarget)) / 5
+            self.stepScore = int(self.stepScore)
+
     #checks if it can see the target car
     #returns the angle it sees it at and the distance
     #if it cannot see it returns 106 and 0
@@ -448,12 +460,13 @@ class Car(WindowElement):
         #if the angle is smaller than 105 then save the point
         for targetPoint in targetPoints:
             toTargetVector = Vector2(targetPoint[0] - self.xCenter , targetPoint[1] - self.yCenter).normalize()
-            angleToTarget = self.direction.angle_to(toTargetVector)
-            if abs(angleToTarget) <= 105 and distanceBetweenPoints(carCenterPoint,targetPoint) < carVisionMaxRange:
+            self.angleToTarget = self.direction.angle_to(toTargetVector)
+            if abs(self.angleToTarget) <= 105 and distanceBetweenPoints(carCenterPoint,targetPoint) < carVisionMaxRange:
                 targetPointFiltered.append(targetPoint)
 
         #target is outside sight range, so it cannot be seen
         if not targetPointFiltered:
+            self.angleToTarget = 106
             return 106,0
 
         targetPoints = targetPointFiltered
@@ -482,6 +495,7 @@ class Car(WindowElement):
                 targetPointFiltered.append(targetPoint)
         
         if not targetPointFiltered:
+            self.angleToTarget = 106
             return 106,0
         if len(targetPointFiltered) > 1:
             targetPoint = tuple(map(mean,zip(*targetPointFiltered)))
@@ -489,14 +503,12 @@ class Car(WindowElement):
             targetPoint = targetPointFiltered[0]
 
         toTargetVector = Vector2(targetPoint[0] - self.xCenter , targetPoint[1] - self.yCenter).normalize()
-        angleToTarget = self.direction.angle_to(toTargetVector)
+        self.angleToTarget = self.direction.angle_to(toTargetVector)
 
         distanceToTarget = distanceBetweenPoints(carCenterPoint,targetPoint)
         if distanceToTarget > carVisionMaxRange:
             distanceToTarget = carVisionMaxRange
-        if abs(angleToTarget) < 3:
-            self.stepScore += rewardSeesTarget
-        return int(angleToTarget), int(carVisionMaxRange)
+        return int(self.angleToTarget), int(distanceToTarget)
                 
 
         

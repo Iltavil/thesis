@@ -17,10 +17,11 @@ from Environment import *
 
 
 env = GameEnvironment()
-while env.is_done() != True:
+while not env.is_done():
+    sleep(0.1)
     env.render()
     env.userInput()
-    # print(env.observe(0))
+    env.observe(1)
 #     for i in range(4):
 #         r = env.step(i+1,0)
  
