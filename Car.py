@@ -403,11 +403,17 @@ class Car(WindowElement):
                 continue
             for ii in range(4):
                 jj = (ii+1)%4
-                line2 = LineString([Point((self.allCars[i].corners[ii].x,self.allCars[i].corners[ii].y)),Point((self.allCars[i].corners[jj].x,self.allCars[i].corners[jj].y))])
+                line2Point1 = Point((self.allCars[i].corners[ii].x,self.allCars[i].corners[ii].y))
+                line2Point2 = Point((self.allCars[i].corners[jj].x,self.allCars[i].corners[jj].y))
+                line2 = LineString([line2Point1,line2Point2])
                 collisionPoint = line1.intersection(line2)
 
                 if collisionPoint.is_empty:
                     continue
+                if isinstance(collisionPoint,LineString):
+                    collisionPoint = line2Point1
+                    if Point(point1).distance(line2Point2) < Point(point1).distance(line2Point1):
+                        collisionPoint = line2Point2
                 collisionPoint = (collisionPoint.x,collisionPoint.y)
 
                 distanceToCar = distanceBetweenPoints(point1,collisionPoint)
