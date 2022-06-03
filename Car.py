@@ -431,11 +431,17 @@ class Car(WindowElement):
         line1 = LineString([Point(point1),Point(point2)])
 
         for wall in self.walls:
-            line2 = LineString([Point(wall.points[0]),Point(wall.points[1])])
+            line2Point1 = Point(wall.points[0])
+            line2Point2 = Point(wall.points[1])
+            line2 = LineString([line2Point1,line2Point2])
             collisionPoint = line1.intersection(line2)
             
             if collisionPoint.is_empty:
                 continue
+            if isinstance(collisionPoint,LineString):
+                    collisionPoint = line2Point1
+                    if Point(point1).distance(line2Point2) < Point(point1).distance(line2Point1):
+                        collisionPoint = line2Point2
             collisionPoint = (collisionPoint.x,collisionPoint.y)
             
 
