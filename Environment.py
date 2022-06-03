@@ -159,7 +159,7 @@ class Environment(AECEnv):
         # (because it was returned by last()), so the _cumulative_rewards for this
         # agent should start again at 0
         self._cumulative_rewards[currentAgent] = 0
-        self.rewards[currentAgent] = self.environment.step(currentAgent,action)
+        self.environment.step(currentAgent,action)
         self.dones[currentAgent] = self.environment.carIsDone(currentAgent)
 
         

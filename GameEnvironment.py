@@ -154,7 +154,7 @@ class GameEnvironment:
         self.carSteps[carIndex] += 1
         #end in case of timeout
         if self.carSteps[carIndex] > carMaxSteps:
-            self.done = True
+            self.cars[carIndex].stillAlive = False
         self.cars[carIndex].wasHitBeforeStep()
         self.cars[carIndex].translateAction(action)
         self.cars[carIndex].hitAllWalls()
