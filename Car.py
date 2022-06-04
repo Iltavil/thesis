@@ -31,6 +31,7 @@ class Car(WindowElement):
         self.velocity = 0
         self.hitWallBug = 0
         self.angleToTarget = 106
+        self.distanceToTarget = carVisionMaxRange
 
         self.lives = carMaxLives
         self.stillAlive = True
@@ -120,6 +121,7 @@ class Car(WindowElement):
         self.wasHitByHunter = False
         self.hitWallBug = 0
         self.angleToTarget = 106
+        self.distanceToTarget = carVisionMaxRange
         self.getCorners()
 
 
@@ -143,11 +145,15 @@ class Car(WindowElement):
 
     def renderSight(self,window):
         #renders the sight vectors and the collision points
-        for sightLine in self.lineCollisionPoints:
-            if sightLine[1] == (0,0):
+        for i in range(len(self.lineCollisionPoints)):
+            if self.lineCollisionPoints[i][1] == (0,0):
                 continue
-            pygame.draw.circle(window,color_blue,sightLine[1],3)
-            pygame.draw.line(window, color_blue, sightLine[0], sightLine[1],1)
+            if self.lineCollisionPointsType[i] == wallType:
+                colorUsed = color_blue
+            else:
+                colorUsed = color_red
+            pygame.draw.circle(window,colorUsed,self.lineCollisionPoints[i][1],3)
+            pygame.draw.line(window, colorUsed, self.lineCollisionPoints[i][0], self.lineCollisionPoints[i][1],1)
 
     #update the position of the car in the 2D plane
     def update(self):
@@ -356,6 +362,7 @@ class Car(WindowElement):
         for angle in sightAngles:
             self.getDistanceFromVector(carLength/2,carWidth/2,angle)
             self.getDistanceFromVector(carLength/2,-carWidth/2,-angle)
+            
         return [self.visionDistances,self.lineCollisionPointsType]
 
 
@@ -454,7 +461,10 @@ class Car(WindowElement):
     def scoreSeeTarget(self):
         if abs(self.angleToTarget) < 106:
             self.stepScore += (106 - abs(self.angleToTarget)) / 5
-            self.stepScore = int(self.stepScore)
+        if self.distanceToTarget < carVisionMaxRange:
+            self.stepScore += (carVisionMaxRange - self.distanceToTarget) / 5
+        self.stepScore = int(self.stepScore)
+
 
     #checks if it can see the target car
     #returns the angle it sees it at and the distance
@@ -517,10 +527,10 @@ class Car(WindowElement):
         toTargetVector = Vector2(targetPoint[0] - self.xCenter , targetPoint[1] - self.yCenter).normalize()
         self.angleToTarget = self.direction.angle_to(toTargetVector)
 
-        distanceToTarget = distanceBetweenPoints(carCenterPoint,targetPoint)
-        if distanceToTarget > carVisionMaxRange:
-            distanceToTarget = carVisionMaxRange
-        return int(self.angleToTarget), int(distanceToTarget)
+        self.distanceToTarget = distanceBetweenPoints(carCenterPoint,targetPoint)
+        if self.distanceToTarget > carVisionMaxRange:
+            self.distanceToTarget = carVisionMaxRange
+        return int(self.angleToTarget), int(self.distanceToTarget)
                 
 
         

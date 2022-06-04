@@ -16,7 +16,7 @@ ModelCatalog.register_custom_model(model_name, TorchCustomModel)
 env = env_creator({})
 register_env("my_env", lambda config: PettingZooEnv(env_creator({})))
 
-path = r'F:\Facultate\thirdYear\sem2\licenta\proiect\models\300StepModel\PPO_my_env_9dafe_00000_0_2022-06-04_01-29-22\checkpoint_000330\checkpoint-330'
+path = r'F:\Facultate\thirdYear\sem2\licenta\proiect\models\testModels\PPO\PPO_my_env_a8563_00000_0_2022-06-04_10-05-04\checkpoint_000050\checkpoint-50'
 
 params_path = Path(path).parent.parent / "params.pkl"
 
@@ -43,6 +43,6 @@ for agent in env.agent_iter():
 
     env.step(action)
     i += 1
-    env.render()
+    env.render("carSight")
 env.close()
 print(reward_sum)

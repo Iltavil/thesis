@@ -92,8 +92,10 @@ class GameEnvironment:
     def renderWalls(self):
         for wall in self.walls:
             wall.draw(self.window)
+        
 
-    def render(self):
+
+    def render(self, mode="human"):
         pygame.init()
         # self.clock = pygame.time.Clock()
         self.window = pygame.display.set_mode((self.width,self.height))
@@ -110,8 +112,9 @@ class GameEnvironment:
         for i in range(len(self.cars)):
             if not self.carIsDone(i):
                 self.cars[i].render(self.window)
-        # for car in self.cars:
-        #     car.renderSight(self.window)
+                if mode == "carSight":
+                    self.cars[i].renderSight(self.window)
+        
         self.renderWalls()
 
         pygame.display.flip()

@@ -32,7 +32,7 @@ class Environment(AECEnv):
     The "name" metadata allows the environment to be pretty printed.
     """
 
-    metadata = {"render_modes": ["human"]}
+    metadata = {"render_modes": ["human","carSight"]}
     def __init__(self):
         '''
         The init method takes in environment arguments and
@@ -85,7 +85,7 @@ class Environment(AECEnv):
         Renders the environment. In human mode, it can print to terminal, open
         up a graphical window, or open up some other display that a human can see and understand.
         '''
-        self.environment.render()
+        self.environment.render(mode)
 
     def observe(self, agent):
         """

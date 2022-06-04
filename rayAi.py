@@ -99,6 +99,7 @@ if __name__ == "__main__":
         checkpoint_freq=10,
         local_dir="F:/Facultate/thirdYear/sem2/licenta/proiect/models/testModels",
         config=runConfig,
+        resume=True
         )
     ray.shutdown()
 
