@@ -12,7 +12,7 @@ color_green = (0,128,0)
 color_blue = (0,0,255)
 
 carMaxLives = 5
-carMaxSteps = 1000
+carMaxSteps = 200
 
 #renderSizes
 carLength = 50

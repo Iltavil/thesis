@@ -59,7 +59,7 @@ if __name__ == "__main__":
     policy_ids = list(policies.keys())
 
     stop = {
-        "training_iteration": 10,
+        "training_iteration": 1000,
     }
     runConfig = {
             # Environment specific
@@ -68,7 +68,9 @@ if __name__ == "__main__":
             "log_level": "ERROR",
             "framework": "torch",
             "num_gpus": 1,
-            "num_workers": 4,
+            "num_workers": 1,
+            "num_cpus_per_worker":1,
+            "train_batch_size": 1100,
             "use_gae": True,
             # Method specific
             "multiagent": {
@@ -94,8 +96,8 @@ if __name__ == "__main__":
         "PPO",
         name="PPO",
         stop=stop,
-        checkpoint_freq=1,
-        local_dir="F:/Facultate/third year/sem2/licenta/proiect/models/testModels",
+        checkpoint_freq=10,
+        local_dir="F:/Facultate/thirdYear/sem2/licenta/proiect/models/testModels",
         config=runConfig,
         )
     ray.shutdown()

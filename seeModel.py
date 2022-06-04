@@ -10,13 +10,15 @@ from rayAi import TorchCustomModel, env_creator
 
 
 
-env_name = "my_model"
-ModelCatalog.register_custom_model(env_name, TorchCustomModel)
+model_name = "my_model"
+env_name = "my_env"
+ModelCatalog.register_custom_model(model_name, TorchCustomModel)
 env = env_creator({})
 register_env("my_env", lambda config: PettingZooEnv(env_creator({})))
 
-path = 'F:/Facultate/third year/sem2/licenta/proiect/models/testModel1/PPO_my_env_51f1e_00000_0_2022-06-03_16-08-54\params.pkl'
-params_path = Path(path)
+path = r'F:\Facultate\thirdYear\sem2\licenta\proiect\models\300StepModel\PPO_my_env_9dafe_00000_0_2022-06-04_01-29-22\checkpoint_000330\checkpoint-330'
+
+params_path = Path(path).parent.parent / "params.pkl"
 
 with open(params_path,"rb") as f:
     config = pickle.load(f)
