@@ -14,6 +14,7 @@ from ray.tune.logger import pretty_print
 torch, nn = try_import_torch()
 
 from Environment import Environment
+from utils import *
 
 class TorchCustomModel(TorchModelV2, nn.Module):
     def __init__(self, obs_space, action_space, num_outputs, model_config, name):
@@ -70,7 +71,7 @@ if __name__ == "__main__":
             "num_gpus": 1,
             "num_workers": 1,
             "num_cpus_per_worker":1,
-            "train_batch_size": 1100,
+            "train_batch_size": (carMaxSteps + 5) * len(test_env.env.environment.cars),
             "use_gae": True,
             # Method specific
             "multiagent": {
@@ -99,7 +100,7 @@ if __name__ == "__main__":
         checkpoint_freq=10,
         local_dir="F:/Facultate/thirdYear/sem2/licenta/proiect/models/testModels",
         config=runConfig,
-        resume=True
+        resume="AUTO"
         )
     ray.shutdown()
 

@@ -1,4 +1,5 @@
 from operator import index
+import random
 from re import S
 import pygame
 from Wall import Wall
@@ -55,6 +56,19 @@ class GameEnvironment:
         for i in range(len(self.cars)):
             j = (i+1) % len(self.cars)
             self.cars[i].setTarget(j)
+
+    def setRandomTarget(self,carIndex):
+        possibleTargets = []
+        for i in range(len(self.cars)):
+            if carIndex == i:
+                continue
+            if self.carIsDone(i):
+                continue
+            possibleTargets.append(i)
+        if not possibleTargets:
+            self.cars[i].setTarget(i)
+            return
+        self.cars[i].setTarget(random.choice(possibleTargets))
 
 
 
@@ -167,6 +181,9 @@ class GameEnvironment:
         #make car be done
         if self.carIsDone(carIndex):
             self.doneCars += 1
+            for car in self.cars:
+                if car.targetIndex == carIndex:
+                    self.setRandomTarget(car.ownIndex)
         #end in case all cars are done
         if self.doneCars == len(self.cars) - 1:
             self.done = True

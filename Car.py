@@ -65,6 +65,7 @@ class Car(WindowElement):
         self.targetIndex = targetIndex
 
 
+
     #sets all cars, needs to be called after all cars were initialised
     def setCars(self, allCars, ownIndex):
         self.allCars = allCars
@@ -345,11 +346,6 @@ class Car(WindowElement):
         
             
 
-
-
-
-
-
     #here we get what the car sees
     #we create rays that show us the car sight
     def getAllDistances(self):
@@ -362,7 +358,8 @@ class Car(WindowElement):
         for angle in sightAngles:
             self.getDistanceFromVector(carLength/2,carWidth/2,angle)
             self.getDistanceFromVector(carLength/2,-carWidth/2,-angle)
-            
+        self.getDistanceFromVector(-carLength/2,carWidth/2,180)
+        self.getDistanceFromVector(-carLength/2,-carWidth/2,180)
         return [self.visionDistances,self.lineCollisionPointsType]
 
 
@@ -480,11 +477,15 @@ class Car(WindowElement):
 
         #find the angle between the direction vector and the given point
         #if the angle is smaller than 105 then save the point
-        for targetPoint in targetPoints:
-            toTargetVector = Vector2(targetPoint[0] - self.xCenter , targetPoint[1] - self.yCenter).normalize()
+        for i in range(len(targetPoints)):
+            xDiff = targetPoints[i][0] - self.xCenter 
+            yDiff = targetPoints[i][1] - self.yCenter
+            if xDiff == 0  and yDiff == 0:
+                continue
+            toTargetVector = Vector2(xDiff, yDiff).normalize()
             self.angleToTarget = self.direction.angle_to(toTargetVector)
-            if abs(self.angleToTarget) <= 105 and distanceBetweenPoints(carCenterPoint,targetPoint) < carVisionMaxRange:
-                targetPointFiltered.append(targetPoint)
+            if abs(self.angleToTarget) <= 105 and distanceBetweenPoints(carCenterPoint,targetPoints[i]) < carVisionMaxRange:
+                targetPointFiltered.append(targetPoints[i])
 
         #target is outside sight range, so it cannot be seen
         if not targetPointFiltered:
