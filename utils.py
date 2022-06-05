@@ -39,12 +39,13 @@ carVisionMaxRange = 400
 #reward 
 rewardHitCar = -100
 rewardWasHitByCar = -50
-rewardHitTarget = 600
+rewardHitTarget = 5000
 rewardHitWall = -20
 rewardHitsHunter = -300
 rewardWasHitByHunter = -150
 rewardTotaledCar = -50
 wallHitsUntilCarBreaks = 10
+rewardDoesNotMoveWhenItSeesTarget = -5
 
 
 def radiansToAngle(radians):

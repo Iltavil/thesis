@@ -346,6 +346,11 @@ class Car(WindowElement):
         
             
 
+
+
+
+
+
     #here we get what the car sees
     #we create rays that show us the car sight
     def getAllDistances(self):
@@ -405,6 +410,8 @@ class Car(WindowElement):
         for i in range(len(self.allCars)):
             if i == self.ownIndex:
                 continue
+            if not self.allCars[i].stillAlive:
+                continue
             for ii in range(4):
                 jj = (ii+1)%4
                 line2Point1 = Point((self.allCars[i].corners[ii].x,self.allCars[i].corners[ii].y))
@@ -457,9 +464,12 @@ class Car(WindowElement):
 
     def scoreSeeTarget(self):
         if abs(self.angleToTarget) < 106:
-            self.stepScore += (106 - abs(self.angleToTarget)) / 5
+            self.stepScore += (106 - abs(self.angleToTarget)) / 10
+            if self.velocity == 0:
+                self.stepScore += rewardDoesNotMoveWhenItSeesTarget
         if self.distanceToTarget < carVisionMaxRange:
             self.stepScore += (carVisionMaxRange - self.distanceToTarget) / 5
+        
         self.stepScore = int(self.stepScore)
 
 

@@ -60,7 +60,7 @@ if __name__ == "__main__":
     policy_ids = list(policies.keys())
 
     stop = {
-        "training_iteration": 1000,
+        "training_iteration": 300,
     }
     runConfig = {
             # Environment specific
