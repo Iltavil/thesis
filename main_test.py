@@ -17,13 +17,13 @@ from Environment import *
 
 
 env = GameEnvironment()
-
+i = 0
 while not env.is_done():
     # env.render("carSight")
-    i = 0
     env.render()
     env.userInput()
     env.observe(i)
+    i += 1
     i = i % 5
 #     for i in range(4):
 #         r = env.step(i+1,0)

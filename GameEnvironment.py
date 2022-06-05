@@ -93,13 +93,25 @@ class GameEnvironment:
 
 
 
+    def normalizeObservations(self, observation):
+        #velocity
+        observation = observation.astype('float64')
+        observation[0] = (observation[0] - carMaxSpeedReverse) / (carMaxSpeed - carMaxSpeedReverse)
+        observation[1] = (observation[1] + 180) / 360
+        for i in range(14):
+            observation[i+1] /= carVisionMaxRange
+        observation[-1] /= carVisionMaxRange
+        observation[-2] = (observation[-2] + 105) / 211
+        return observation
+
+    
     def observe(self, index):
         sightResult = self.cars[index].getAllDistances()
         sightResult.append(self.cars[index].seeTarget())
         sightResult = np.array(np.concatenate(sightResult).flat, dtype=np.int64)
         sightResult = np.insert(sightResult,0, self.cars[index].velocity)
         sightResult = np.insert(sightResult,1, vectorToAngle(self.cars[index].direction))
-        return sightResult
+        return self.normalizeObservations(sightResult)
 
 
 

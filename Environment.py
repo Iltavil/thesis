@@ -62,9 +62,9 @@ class Environment(AECEnv):
         self.actions = {agent: {} for agent in self.agents}
 
         self._action_spaces = {agent: Discrete(9) for agent in self.possible_agents}
-        self.observation_spaces = {agent: Box(np.array([carMaxSpeedReverse,-180,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-105,0]),
-        np.array([carMaxSpeed,180,carVisionMaxRange,carVisionMaxRange, carVisionMaxRange, carVisionMaxRange, carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,1,1,1,1,1,1,1,1,1,1,1,1,1,106,carVisionMaxRange])
-        ,dtype=np.int64) for agent in self.possible_agents}
+        self.observation_spaces = {agent: Box(np.array([0,0,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0,0]),
+        np.array([1,1,1,1, 1, 1, 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1])
+        ,dtype=np.float64) for agent in self.possible_agents}
 
         super().__init__()
         
@@ -72,9 +72,9 @@ class Environment(AECEnv):
     @functools.lru_cache(maxsize=None)
     def observation_space(self, agent):
         # Gym spaces are defined and documented here: https://gym.openai.com/docs/#spaces
-        return Box(np.array([carMaxSpeedReverse,-180,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,-105,0]),
-        np.array([carMaxSpeed,180,carVisionMaxRange,carVisionMaxRange, carVisionMaxRange, carVisionMaxRange, carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,carVisionMaxRange,1,1,1,1,1,1,1,1,1,1,1,1,1,106,carVisionMaxRange])
-        ,dtype=np.int64)
+        return Box(np.array([0,0,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0,0]),
+        np.array([1,1,1,1, 1, 1, 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1])
+        ,dtype=np.float64)
 
     @functools.lru_cache(maxsize=None)
     def action_space(self, agent):
