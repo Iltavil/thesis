@@ -1,0 +1,25 @@
+{
+  "env": "my_env",
+  "framework": "torch",
+  "log_level": "ERROR",
+  "multiagent": {
+    "policies": {
+      "policy_0": [
+        null,
+        "Box([0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.\n 0. 0. 0. 0. 0. 0.], [1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1.\n 1. 1. 1. 1. 1. 1.], (30,), float64)",
+        "Discrete(9)",
+        {
+          "model": {
+            "custom_model": "my_model"
+          }
+        }
+      ]
+    },
+    "policy_mapping_fn": "<function <lambda> at 0x000001D8FD687F70>"
+  },
+  "num_cpus_per_worker": 1,
+  "num_gpus": 1,
+  "num_workers": 1,
+  "train_batch_size": 1025,
+  "use_gae": true
+}

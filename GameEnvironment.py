@@ -86,9 +86,9 @@ class GameEnvironment:
         self.walls.append(Wall((622, 476),(818, 596)))
         self.walls.append(Wall((166, 602),(178, 489)))
         self.walls.append(Wall((166, 602),(332, 601)))
-        self.walls.append(Wall((1092, 345),(1139, 292)))
+        # self.walls.append(Wall((1092, 345),(1139, 292)))
         self.walls.append(Wall((1131, 173),(1089, 96)))
-        self.walls.append(Wall((971, 368),(1066, 418)))
+        # self.walls.append(Wall((971, 368),(1066, 418)))
         self.walls.append(Wall((1045, 555),(1250, 407)))
 
 

@@ -16,7 +16,7 @@ ModelCatalog.register_custom_model(model_name, TorchCustomModel)
 env = env_creator({})
 register_env("my_env", lambda config: PettingZooEnv(env_creator({})))
 
-path = r'F:\Facultate\thirdYear\sem2\licenta\proiect\models\testModels\PPO\PPO_my_env_26f15_00000_0_2022-06-05_13-49-20\checkpoint_000110\checkpoint-110'
+path = r'F:\Facultate\thirdYear\sem2\licenta\proiect\savedModels\firstLongModel\PPO_my_env_ea61a_00000_0_2022-06-05_22-23-02\checkpoint_000180\checkpoint-180'
 
 params_path = Path(path).parent.parent / "params.pkl"
 
