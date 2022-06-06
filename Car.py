@@ -32,6 +32,10 @@ class Car(WindowElement):
         self.hitWallBug = 0
         self.angleToTarget = 106
         self.distanceToTarget = carVisionMaxRange
+        self.previousAngleToTarget = 106
+        self.previousDistanceToTarget = carVisionMaxRange
+
+        self.distanceBetweenHunterAndTarget = windowWidth + windowHeight
 
         self.lives = carMaxLives
         self.stillAlive = True
@@ -123,6 +127,9 @@ class Car(WindowElement):
         self.hitWallBug = 0
         self.angleToTarget = 106
         self.distanceToTarget = carVisionMaxRange
+        self.previousAngleToTarget = 106
+        self.previousDistanceToTarget = carVisionMaxRange
+        self.distanceBetweenHunterAndTarget = windowWidth + windowHeight
         self.getCorners()
 
 
@@ -463,12 +470,17 @@ class Car(WindowElement):
         return closestWallHit,minDistance
 
     def scoreSeeTarget(self):
-        if abs(self.angleToTarget) < 106:
+        if abs(self.angleToTarget) < 106 and abs(self.angleToTarget) < abs(self.previousAngleToTarget):
             self.stepScore += (106 - abs(self.angleToTarget)) / 10
             if self.velocity == 0:
                 self.stepScore += rewardDoesNotMoveWhenItSeesTarget
-        if self.distanceToTarget < carVisionMaxRange:
+        if self.distanceToTarget < carVisionMaxRange and self.distanceToTarget <  self.previousDistanceToTarget:
             self.stepScore += (carVisionMaxRange - self.distanceToTarget) / 5
+        
+        distanceBetweenCarAndTarget = distanceBetweenPoints((self.xCenter, self.yCenter), (self.allCars[self.targetIndex].xCenter,self.allCars[self.targetIndex].yCenter))
+        if distanceBetweenCarAndTarget < self.distanceBetweenHunterAndTarget:
+            self.stepScore += 2
+            self.distanceBetweenHunterAndTarget = distanceBetweenCarAndTarget
         
         self.stepScore = int(self.stepScore)
 
@@ -484,6 +496,7 @@ class Car(WindowElement):
             targetPoints.append((corner.x,corner.y))
 
         targetPointFiltered = []
+        self.previousAngleToTarget = self.angleToTarget
 
         #find the angle between the direction vector and the given point
         #if the angle is smaller than 105 then save the point
@@ -538,6 +551,7 @@ class Car(WindowElement):
         toTargetVector = Vector2(targetPoint[0] - self.xCenter , targetPoint[1] - self.yCenter).normalize()
         self.angleToTarget = self.direction.angle_to(toTargetVector)
 
+        self.previousDistanceToTarget = self.distanceToTarget
         self.distanceToTarget = distanceBetweenPoints(carCenterPoint,targetPoint)
         if self.distanceToTarget > carVisionMaxRange:
             self.distanceToTarget = carVisionMaxRange
