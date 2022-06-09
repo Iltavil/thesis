@@ -2,7 +2,6 @@ from pettingzoo import AECEnv
 from pettingzoo.utils import agent_selector
 from pettingzoo.utils import wrappers
 from gym.spaces import Discrete, Box
-from utils import carVisionMaxRange
 import numpy as np
 import functools
 

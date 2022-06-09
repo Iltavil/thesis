@@ -1,7 +1,5 @@
 import pygame
-from WindowElement import WindowElement
 from utils import *
-from Point import *
 class Wall:
     def __init__(self, point1:list,point2:list):
         self.points = []

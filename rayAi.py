@@ -1,14 +1,12 @@
 from pkg_resources import Environment
-import torch, ray
+import ray
 from ray import  tune
-import os
 from ray.rllib.env.wrappers.pettingzoo_env import PettingZooEnv
 from ray.tune.registry import register_env
 from ray.rllib.models.torch.torch_modelv2 import TorchModelV2
 from ray.rllib.utils.framework import try_import_torch
 from ray.rllib.models.torch.fcnet import FullyConnectedNetwork as TorchFC
 from ray.rllib.models import ModelCatalog
-from ray.rllib.agents import ppo
 from ray.tune.logger import pretty_print
 
 torch, nn = try_import_torch()

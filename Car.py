@@ -1,14 +1,12 @@
-from re import S
-from tkinter.messagebox import NO
 import pygame
-from WindowElement import WindowElement
+
 from utils import *
 from shapely.geometry import Point, LineString, Polygon
 from numpy import mean
 from random import choice
 
 
-class Car(WindowElement):
+class Car():
     def __init__(self,xCenter,yCenter,walls,resetPoints):
         super().__init__()
 

@@ -1,5 +1,4 @@
-from argparse import Action
-import os,pickle,ray
+import pickle,ray
 from ray.rllib.env.wrappers.pettingzoo_env import PettingZooEnv
 from ray.tune.registry import register_env
 from ray.rllib.models import ModelCatalog
@@ -16,7 +15,7 @@ ModelCatalog.register_custom_model(model_name, TorchCustomModel)
 env = env_creator({})
 register_env("my_env", lambda config: PettingZooEnv(env_creator({})))
 
-path = r'F:\Facultate\thirdYear\sem2\licenta\proiect\savedModels\firstLongModel\PPO_my_env_ea61a_00000_0_2022-06-05_22-23-02\checkpoint_000180\checkpoint-180'
+path = r'F:\Facultate\thirdYear\sem2\licenta\proiect\savedModels\finalModel\checkpoint_001000\checkpoint-1000'
 
 params_path = Path(path).parent.parent / "params.pkl"
 

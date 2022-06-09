@@ -1,12 +1,9 @@
-from operator import index
 import random
-from re import S
 import pygame
 from Wall import Wall
 from utils import *
 from Car import Car
 import numpy as np
-from gym.spaces import Box
 
 
 
