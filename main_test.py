@@ -19,8 +19,8 @@ from Environment import *
 env = GameEnvironment()
 i = 0
 while not env.is_done():
-    # env.render("carSight")
-    env.render()
+    env.render("carSight")
+    # env.render()
     env.userInput()
     env.observe(i)
     i += 1
